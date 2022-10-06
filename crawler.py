@@ -1,10 +1,4 @@
-import requests
-import sqlite3
 from functions import *
-
-# dbfile = "test.db"
-# conn = sqlite3.connect(dbfile)
-# c = conn.cursor()
 
 c, conn = init_db("test.db")
 
