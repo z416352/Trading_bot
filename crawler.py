@@ -9,7 +9,10 @@ coin_txt.close()
 
 create_table(c, coin)
 
-crypto_df = get_candle_data()
+start_time = datetime(2022, 10, 4, 8, 0)
+end_time = datetime(2022, 10, 6, 8, 0)
+
+crypto_df = get_candle_data(start=start_time, end=end_time)
 # for i in range(len(crypto_price_data_list)):
 #     open_price  = crypto_price_data_list[i]["open"]
 #     high_price  = crypto_price_data_list[i]["high"]
