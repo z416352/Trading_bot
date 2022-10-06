@@ -1,6 +1,7 @@
 from datetime import datetime
 import sqlite3
 import requests
+import pandas as pd
 
 def millisecond2date(milliseconds):
     timestamp = milliseconds // 1000
@@ -8,7 +9,7 @@ def millisecond2date(milliseconds):
 
     return value
 
-def get_candle_data(exchange = "binance", interval = "m1", baseId = "bitcoin", quoteId = "tether"):
+def get_candle_data(exchange = "binance", interval = "d1", baseId = "bitcoin", quoteId = "tether"):
     ## interval = m1, m5, m15, m30, h1, h2, h6, h12, d1
     if interval not in {'m1', 'm5', 'm15', 'm30', 'h1', 'h2', 'h6', 'h12', 'd1'}:
         print("interval error")
@@ -21,7 +22,17 @@ def get_candle_data(exchange = "binance", interval = "m1", baseId = "bitcoin", q
     response = requests.request("GET", url, headers=headers, data=payload)
     crypto_price_data_list = response.json()["data"]
 
-    return crypto_price_data_list
+    df = pd.DataFrame(columns=["Open", "High", "Low", "Close", "Volume"])
+    for crypto_dict in crypto_price_data_list:
+        df.loc[millisecond2date(crypto_dict["period"])] = [
+            crypto_dict["open"],
+            crypto_dict["high"],
+            crypto_dict["low"],
+            crypto_dict["close"],
+            crypto_dict["volume"]
+        ]
+
+    return df
 
 # 初始化db
 def init_db(db_name):
