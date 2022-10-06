@@ -2,29 +2,18 @@ import requests
 import sqlite3
 from functions import *
 
-dbfile = "test.db"
-conn = sqlite3.connect(dbfile)
-c = conn.cursor()
+# dbfile = "test.db"
+# conn = sqlite3.connect(dbfile)
+# c = conn.cursor()
+
+c, conn = init_db("test.db")
 
 # coin_txt 放入要存入的幣別
 coin_txt = open("coin.txt","r",encoding = 'utf8')
 coin = coin_txt.read()
 coin_txt.close()
 
-# 建立資料表
-command = '''CREATE TABLE if not exists '{}' (
-	"cid"	 INTEGER NOT NULL,
-	"open"	 INTEGER,
-	"high"	 INTEGER,
-	"low"	 INTEGER,
-	"close"	 INTEGER,
-	"volume" INTEGER,
-    "date"   TEXT ,
-	PRIMARY KEY("cid" AUTOINCREMENT)
-);'''.format(coin)
-
-c.execute(command)
-
+create_table(c, coin)
 
 crypto_price_data_list = get_candle_data()
 for i in range(len(crypto_price_data_list)):
@@ -35,8 +24,6 @@ for i in range(len(crypto_price_data_list)):
     volume      = crypto_price_data_list[i]["volume"]
     date_time   = str(millisecond2date(crypto_price_data_list[i]["period"]))
     # print("open:"+open_price+" high:"+high_price+" low:"+low_price+" close:"+close_price+" volume:"+volume+" date:"+date_time)
-    insert_data = "insert into '{}'(open, high, low, close, volume, date) values('{}', '{}', '{}', '{}', '{}', '{}');".format(coin, open_price, high_price, low_price, close_price, volume, date_time)
-    c.execute(insert_data)
-
+    insert_data(c, coin, open_price, high_price, low_price, close_price, volume, date_time)
 
 conn.commit()
