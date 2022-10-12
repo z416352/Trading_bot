@@ -1,37 +1,42 @@
 from dis import findlabels
 import requests
 import sqlite3
-
-
+from datetime import datetime, timedelta
 from finlab import crypto
 
 # {"1m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "1d"}
 df = crypto.get_all_binance('BTCUSDT', '1h', save=False)
 df = df.drop(["Close_time", "Quote_av", "Trades", "Tb_base_av", "Tb_quote_av", "Ignore"], axis=1)
-# print(df)
+df = df.reset_index(level=0)
+df['Timestamp'] += timedelta(hours=8)
+print(df['Timestamp'])
 
-# dbfile = "test.db"
-# conn = sqlite3.connect(dbfile)
-# c = conn.cursor()
 
-# # coin_txt 放入要存入的幣別
+dbfile = "test.db"
+conn = sqlite3.connect(dbfile)
+c = conn.cursor()
+
+## coin_txt 放入要存入的幣別
 # coin_txt = open("coin.txt","r",encoding = 'utf8')
 # coin = coin_txt.read()
 # coin_txt.close()
+coin = 'bitcoin'
 
 # # 建立資料表
-# command = '''CREATE TABLE if not exists '{}' (
-# 	"cid"	 INTEGER NOT NULL,
-# 	"open"	 INTEGER,
-# 	"high"	 INTEGER,
-# 	"low"	 INTEGER,
-# 	"close"	 INTEGER,
-# 	"volume" INTEGER,
-#   "date"   TEXT ,
-# 	PRIMARY KEY("cid" AUTOINCREMENT)
-# );'''.format(coin)
+command = '''CREATE TABLE if not exists '{}' (
+"Timestamp"	 TEXT NOT NULL,
+"Open"	 INTEGER,
+"High"	 INTEGER,
+"Low"	 INTEGER,
+"Close"	 INTEGER,
+"Volume" INTEGER,
+PRIMARY KEY("Timestamp")
+);'''.format(coin)
 
-# c.execute(command)
+c.execute(command)
+
+df.to_sql(coin, conn, if_exists='append', index=False) 
+
 
 
 # crypto_price_data_list = get_candle_data()
