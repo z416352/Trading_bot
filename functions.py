@@ -13,7 +13,7 @@ def millisecond2date(milliseconds):
 def date2millisecond(date_time):
     return (int)(time.mktime(date_time.timetuple()) * 1000)
 
-def get_candle_data(exchange = "binance", interval = "d1", baseId = "bitcoin", quoteId = "tether", start = datetime.now(), end = datetime.now()):
+def get_candle_data(exchange = "binance", interval = "h1", baseId = "bitcoin", quoteId = "tether", start = datetime.now(), end = datetime.now()):
     ## interval = m1, m5, m15, m30, h1, h2, h6, h12, d1
     assert interval in {'m1', 'm5', 'm15', 'm30', 'h1', 'h2', 'h6', 'h12', 'd1'}, "interval error"
 
@@ -93,14 +93,15 @@ def create_table(cursor, coin_name):
     
     cursor.execute(command)
 
+def update_table(conn, coin_name, interval):
+    print("update_table() 處理中....")
 
-def update_table(conn, coin_name):
     last_data_df = pd.read_sql("SELECT * FROM "+ coin_name +" WHERE Timestamp=(SELECT MAX(Timestamp) FROM " + coin_name +")", conn)
 
     last_date =  datetime.strptime(last_data_df['Timestamp'][0], '%Y-%m-%d %H:%M:%S')
     start = last_date + timedelta(seconds=3) # 避免重複資料的問題
     end = datetime.now()
-    crypto_df = get_candle_data(start=start, end=end)
+    crypto_df = get_candle_data(start=start, end=end, interval=interval)
 
     try :
         crypto_df.to_sql(coin_name, conn, if_exists='append', index=True, index_label='Timestamp') 
@@ -110,7 +111,6 @@ def update_table(conn, coin_name):
         print ("ERROR: 其他錯誤")
     else:
         print("新增完成")
-
 
 def show_all_data(conn, coin_name):
     df = pd.read_sql("SELECT * FROM "+ coin_name, conn)

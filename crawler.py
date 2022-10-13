@@ -10,7 +10,7 @@ coin_txt.close()
 
 # create_table(c, coin)
 
-update_table(conn, coin)
+update_table(conn, coin, interval='h1')
 
 df = show_all_data(conn, coin)
 print(df)
