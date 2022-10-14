@@ -3,7 +3,7 @@ import sqlite3
 import requests
 import pandas as pd
 import time
-from exceptions import *
+from .exceptions import *
 import sys
 
 def get_candle_data(exchange = "binance", interval = "h1", baseId = "bitcoin", quoteId = "tether", start = datetime.now(), end = datetime.now()):
@@ -123,6 +123,8 @@ class DB_table():
             # print("To: " + end)
             print("update() 新增完成 !")
 
-    def show(self):
+    def get_all(self):
         df = pd.read_sql("SELECT * FROM "+ self.coin_name, self.conn)
-        print(df)
+        df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+        return df
+
