@@ -5,14 +5,14 @@ from datetime import datetime, timedelta
 from finlab import crypto
 
 # {"1m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "1d"}
-df = crypto.get_all_binance('BTCUSDT', '1h', save=False)
+df = crypto.get_all_binance('BTCUSDT', '1d', save=False)
 df = df.drop(["Close_time", "Quote_av", "Trades", "Tb_base_av", "Tb_quote_av", "Ignore"], axis=1)
 df = df.reset_index(level=0)
 df['Timestamp'] += timedelta(hours=8)
 print(df['Timestamp'])
 
 
-dbfile = "test.db"
+dbfile = "../../DATA/test.db"
 conn = sqlite3.connect(dbfile)
 c = conn.cursor()
 

@@ -8,6 +8,10 @@ from binance.client import Client
 from datetime import timedelta, datetime
 from dateutil import parser
 from tqdm import tqdm_notebook #(Optional, used for progress-bars)
+import pathlib
+import sys
+
+sys.path.append(str(pathlib.Path().absolute())+"\..\DATA")
 import config
 import backtrader as bt
 
@@ -33,7 +37,7 @@ def minutes_of_new_data(symbol, kline_size, data, source):
     if source == "bitmex": new = bitmex_client.Trade.Trade_getBucketed(symbol=symbol, binSize=kline_size, count=1, reverse=True).result()[0][0]['timestamp']
     return old, new
 
-def get_all_binance(symbol, kline_size, save=True, update=True):
+def get_all_binance(symbol, kline_size, save=True, update=True, start=datetime.strptime('1 Jan 2017', '%d %b %Y'), end=datetime.now()):
     
     
     if not os.path.exists('history'):
@@ -60,9 +64,12 @@ def get_all_binance(symbol, kline_size, save=True, update=True):
     if not data_df.empty:
         oldest_point = data_df.index[-1].to_pydatetime()
     else:
-        oldest_point = datetime.strptime('1 Jan 2017', '%d %b %Y')
-    newest_point = datetime.now()
-    print(oldest_point, newest_point)
+        # oldest_point = datetime.strptime('1 Jan 2017', '%d %b %Y')
+        oldest_point = start
+    # newest_point = datetime.now()
+    newest_point = end
+    print("     start from: ", oldest_point)
+    print("     end from: ", newest_point)
     
     delta_min = (newest_point - oldest_point).total_seconds()/60
     available_data = math.ceil(delta_min/binsizes[kline_size])
