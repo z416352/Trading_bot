@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 import sqlite3
-# import requests
 import pandas as pd
-# import time
 from exceptions import *
 import sys
 from crypto_backtrader.finlab import crypto
