@@ -1,10 +1,10 @@
 import sys
 import os
+import pathlib
 
-cur_path =  os.path.abspath(os.path.dirname(__file__))
-root_path = cur_path[:cur_path.find("Trading_bot\\")+len("Trading_bot\\")]
-sys.path.append(root_path)
-from Crawler.functions import *
+sys.path.append(str(pathlib.Path().absolute())+"\..\DATA")
+sys.path.append(str(pathlib.Path().absolute())+"\..\Crawler")
+from functions import *
 
 import datetime as dt
 import backtrader as bt
